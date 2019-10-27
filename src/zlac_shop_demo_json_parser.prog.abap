@@ -1,9 +1,9 @@
 *&---------------------------------------------------------------------*
-*& Report ZSHOP_DEMO_JSON_PARSER
+*& Report ZLAC_SHOP_DEMO_JSON_PARSER
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-REPORT zshop_demo_json_parser.
+REPORT zlac_shop_demo_json_parser.
 
 *--------------------------------------------------------------------*
 * CLASS
@@ -18,16 +18,16 @@ ENDCLASS.
 CLASS lc IMPLEMENTATION.
   METHOD main.
 
-    DATA: lo_json_parser TYPE REF TO zif_shop_json_parser,
+    DATA: lo_json_parser TYPE REF TO zif_lac_json_parser,
           ld_ddic        TYPE REF TO data.
 
-    FIELD-SYMBOLS <fs_response> TYPE zshop_so_hdr_json.
+    FIELD-SYMBOLS <fs_response> TYPE zlac_shop_so_hdr_json.
 
-    CREATE OBJECT lo_json_parser TYPE zcl_shop_json_parser
+    CREATE OBJECT lo_json_parser TYPE zcl_lac_json_parser
       EXPORTING
         io_reader = io_reader.
 
-    ld_ddic = lo_json_parser->parse( VALUE zshop_so_hdr_json( ) ).
+    ld_ddic = lo_json_parser->parse( VALUE zlac_shop_so_hdr_json( ) ).
     ASSIGN ld_ddic->* TO <fs_response>.
     IF <fs_response> IS NOT ASSIGNED.
       RETURN.
@@ -49,10 +49,10 @@ ENDCLASS.
 * Coding
 *--------------------------------------------------------------------*
 START-OF-SELECTION.
-  DATA: lx_shop_unsupported_type TYPE REF TO zcx_shop_unsupported_type,
-        lx_shop_json_parser      TYPE REF TO zcx_shop_json_parser,
-        lo_reader                TYPE REF TO if_sxml_reader,
-        lv_json                  TYPE xstring.
+  DATA: lx_lac_unsupported_type TYPE REF TO zcx_lac_unsupported_media_type,
+        lx_lac_json_parser      TYPE REF TO zcx_lac_json_parser,
+        lo_reader               TYPE REF TO if_sxml_reader,
+        lv_json                 TYPE xstring.
 
   lv_json = cl_abap_codepage=>convert_to( '{'
     && '"uuid": "1302bdc1-ee08-4683-bac8-e50488d58c7c",'
@@ -65,15 +65,15 @@ START-OF-SELECTION.
     && '}' ).
 
   TRY .
-      lo_reader = zcl_shop_sxml_factory=>build( lv_json ).
-    CATCH zcx_shop_unsupported_type INTO lx_shop_unsupported_type.
-      MESSAGE lx_shop_unsupported_type->get_text( )
+      lo_reader = zcl_lac_sxml_factory=>build( lv_json ).
+    CATCH zcx_lac_unsupported_media_type INTO lx_lac_unsupported_type.
+      MESSAGE lx_lac_unsupported_type->get_text( )
          TYPE 'E'.
   ENDTRY.
 
   TRY.
       NEW lc( )->main( lo_reader ).
-    CATCH zcx_shop_json_parser INTO lx_shop_json_parser.
-      MESSAGE lx_shop_json_parser->get_text( )
+    CATCH zcx_lac_json_parser INTO lx_lac_json_parser.
+      MESSAGE lx_lac_json_parser->get_text( )
          TYPE 'E'.
   ENDTRY.
